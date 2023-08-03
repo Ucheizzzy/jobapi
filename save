@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Jobs API
+  title: Jobapi
   contact: {}
   version: '1.0'
 servers:
@@ -11,18 +11,23 @@ paths:
     post:
       tags:
         - Auth
-      summary: Register User
-      operationId: RegisterUser
+      summary: Register
+      operationId: Register
       parameters: []
       requestBody:
         description: ''
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterUserRequest'
+              allOf:
+                - $ref: '#/components/schemas/RegisterRequest'
+                - example:
+                    name: peter
+                    email: peter@gmail.com
+                    password: secret
             example:
-              name: bob
-              email: bob@gmail.com
+              name: peter
+              email: peter@gmail.com
               password: secret
         required: true
       responses:
@@ -35,17 +40,21 @@ paths:
     post:
       tags:
         - Auth
-      summary: Login User
-      operationId: LoginUser
+      summary: Login
+      operationId: Login
       parameters: []
       requestBody:
         description: ''
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginUserRequest'
+              allOf:
+                - $ref: '#/components/schemas/LoginRequest'
+                - example:
+                    email: mog@gmail.com
+                    password: secret
             example:
-              email: susan@gmail.com
+              email: mog@gmail.com
               password: secret
         required: true
       responses:
@@ -55,31 +64,10 @@ paths:
       deprecated: false
       security: []
   /jobs:
-    post:
-      tags:
-        - Jobs
-      summary: Create Job
-      operationId: CreateJob
-      parameters: []
-      requestBody:
-        description: ''
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateJobRequest'
-            example:
-              company: google
-              position: front-end developer
-        required: true
-      responses:
-        '200':
-          description: ''
-          headers: {}
-      deprecated: false
     get:
       tags:
-        - Jobs
-      summary: Get All Jobs
+        - jobs
+      summary: GetAllJobs
       operationId: GetAllJobs
       parameters: []
       responses:
@@ -87,6 +75,33 @@ paths:
           description: ''
           headers: {}
       deprecated: false
+    post:
+      tags:
+        - jobs
+      summary: CreateJob
+      operationId: CreateJob
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/CreateJobRequest'
+                - example:
+                    company: Showmax
+                    position: software engineer
+            example:
+              company: Showmax
+              position: software engineer
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
   /jobs/{id}:
     parameters:
       - in: path
@@ -94,23 +109,24 @@ paths:
         schema:
           type: string
         required: true
-        description: The job ID
+        description: the job id
     get:
       tags:
-        - Jobs
-      summary: Get Single Job
-      operationId: GetSingleJob
+        - jobs
+      summary: SingleJob
+      operationId: SingleJob
       parameters: []
       responses:
         '200':
           description: ''
           headers: {}
       deprecated: false
-
+      security:
+        - bearer: []
     patch:
       tags:
-        - Jobs
-      summary: Update Job
+        - jobs
+      summary: UpdateJob
       operationId: UpdateJob
       parameters: []
       requestBody:
@@ -118,20 +134,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateJobRequest'
+              allOf:
+                - $ref: '#/components/schemas/UpdateJobRequest'
+                - example:
+                    company: Research In Motion
+                    position: chief operations officer
             example:
-              company: random
-              position: intern
+              company: Research In Motion
+              position: chief operations officer
         required: true
       responses:
         '200':
           description: ''
           headers: {}
       deprecated: false
+      security:
+        - bearer: []
     delete:
       tags:
-        - Jobs
-      summary: Delete Job
+        - jobs
+      summary: DeleteJob
       operationId: DeleteJob
       parameters: []
       responses:
@@ -139,10 +161,12 @@ paths:
           description: ''
           headers: {}
       deprecated: false
+      security:
+        - bearer: []
 components:
   schemas:
-    RegisterUserRequest:
-      title: RegisterUserRequest
+    RegisterRequest:
+      title: RegisterRequest
       required:
         - name
         - email
@@ -156,11 +180,11 @@ components:
         password:
           type: string
       example:
-        name: bob
-        email: bob@gmail.com
+        name: peter
+        email: peter@gmail.com
         password: secret
-    LoginUserRequest:
-      title: LoginUserRequest
+    LoginRequest:
+      title: LoginRequest
       required:
         - email
         - password
@@ -171,7 +195,7 @@ components:
         password:
           type: string
       example:
-        email: susan@gmail.com
+        email: mog@gmail.com
         password: secret
     CreateJobRequest:
       title: CreateJobRequest
@@ -185,8 +209,8 @@ components:
         position:
           type: string
       example:
-        company: google
-        position: front-end developer
+        company: Showmax
+        position: software engineer
     UpdateJobRequest:
       title: UpdateJobRequest
       required:
@@ -199,16 +223,15 @@ components:
         position:
           type: string
       example:
-        company: random
-        position: intern
+        company: Research In Motion
+        position: chief operations officer
   securitySchemes:
-    httpBearer:
+    bearer:
       type: http
       scheme: bearer
-security:
-  - httpBearer: []
+security: []
 tags:
   - name: Auth
     description: ''
-  - name: Jobs
+  - name: jobs
     description: ''
