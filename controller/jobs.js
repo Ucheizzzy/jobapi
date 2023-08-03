@@ -1,6 +1,10 @@
 const { StatusCodes } = require('http-status-codes')
 const Job = require('../model/Job')
-const { BadRequestError, NotFoundError } = require('../errors')
+const {
+  BadRequestError,
+  NotFoundError,
+  UnauthenticatedError,
+} = require('../errors')
 
 const getAllJob = async (req, res) => {
   //we want to get only the jobs that is associated with a users so we will sort by createdBy
@@ -54,7 +58,20 @@ const updateJob = async (req, res) => {
   res.status(StatusCodes.OK).json({ job })
 }
 const deleteJob = async (req, res) => {
-  res.status(200).send('delete a job')
+  const {
+    user: { userId },
+    params: { id: jobId },
+  } = req
+  const job = await Job.findByIdAndRemove({
+    _id: jobId,
+    createdBy: userId,
+  })
+  if (!job) {
+    throw new NotFoundError('No job with id ${jobId}')
+  }
+  res
+    .status(StatusCodes.OK)
+    .json({ msg: `job ${job.company} has been deleted` })
 }
 
 const showStats = async (req, res) => {
