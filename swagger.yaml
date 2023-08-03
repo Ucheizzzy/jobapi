@@ -202,11 +202,13 @@ components:
         company: random
         position: intern
   securitySchemes:
-    httpBearer:
+    bearerAuth:
       type: http
+      in: header
       scheme: bearer
+      bearerFormat: JWT
 security:
-  - httpBearer: []
+  - bearerAuth: []
 tags:
   - name: Auth
     description: ''
